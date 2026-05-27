@@ -2,7 +2,13 @@
 
 A comprehensive, production-ready data engineering platform for real-time customer churn prediction using modern data stack technologies.
 
-## Screenshots
+## Project Workflow
+
+![Application Logo](https://raw.githubusercontent.com/MagicDash91/astronomer-airflow/main/static/arch.png)
+
+---
+
+## Project Screenshots
 
 ![Application Logo](https://raw.githubusercontent.com/MagicDash91/astronomer-airflow/main/static/a1.JPG)
 
@@ -15,6 +21,8 @@ A comprehensive, production-ready data engineering platform for real-time custom
 ![Application Logo](https://raw.githubusercontent.com/MagicDash91/astronomer-airflow/main/static/a5.JPG)
 
 ![Application Logo](https://raw.githubusercontent.com/MagicDash91/astronomer-airflow/main/static/a6.JPG)
+
+---
 
 ## 🏗️ Architecture Overview
 
