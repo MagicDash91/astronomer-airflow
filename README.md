@@ -2,6 +2,20 @@
 
 A comprehensive, production-ready data engineering platform for real-time customer churn prediction using modern data stack technologies.
 
+## Screenshots
+
+![Application Logo](https://raw.githubusercontent.com/MagicDash91/ML-Engineering-Project/static/a1.JPG)
+
+![Application Logo](https://raw.githubusercontent.com/MagicDash91/ML-Engineering-Project/static/a2.JPG)
+
+![Application Logo](https://raw.githubusercontent.com/MagicDash91/ML-Engineering-Project/static/a3.JPG)
+
+![Application Logo](https://raw.githubusercontent.com/MagicDash91/ML-Engineering-Project/static/a4.JPG)
+
+![Application Logo](https://raw.githubusercontent.com/MagicDash91/ML-Engineering-Project/static/a5.JPG)
+
+![Application Logo](https://raw.githubusercontent.com/MagicDash91/ML-Engineering-Project/static/a6.JPG)
+
 ## 🏗️ Architecture Overview
 
 ```
