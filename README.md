@@ -1,4 +1,4 @@
-# 🚀 End-to-End Customer Churn Prediction Platform
+# 🚀 End-to-End Customer Churn Data Engineering Platform
 
 A comprehensive, production-ready data engineering platform for real-time customer churn prediction using modern data stack technologies.
 
