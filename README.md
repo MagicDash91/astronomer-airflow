@@ -4,17 +4,17 @@ A comprehensive, production-ready data engineering platform for real-time custom
 
 ## Screenshots
 
-![Application Logo](https://raw.githubusercontent.com/MagicDash91/astronomer-airflow/static/a1.JPG)
+![Application Logo](https://raw.githubusercontent.com/MagicDash91/astronomer-airflow/main/static/a1.JPG)
 
-![Application Logo](https://raw.githubusercontent.com/MagicDash91/astronomer-airflow/static/a2.JPG)
+![Application Logo](https://raw.githubusercontent.com/MagicDash91/astronomer-airflow/main/static/a2.JPG)
 
-![Application Logo](https://raw.githubusercontent.com/MagicDash91/astronomer-airflow/static/a3.JPG)
+![Application Logo](https://raw.githubusercontent.com/MagicDash91/astronomer-airflow/main/static/a3.JPG)
 
-![Application Logo](https://raw.githubusercontent.com/MagicDash91/astronomer-airflow/static/a4.JPG)
+![Application Logo](https://raw.githubusercontent.com/MagicDash91/astronomer-airflow/main/static/a4.JPG)
 
-![Application Logo](https://raw.githubusercontent.com/MagicDash91/astronomer-airflow/static/a5.JPG)
+![Application Logo](https://raw.githubusercontent.com/MagicDash91/astronomer-airflow/main/static/a5.JPG)
 
-![Application Logo](https://raw.githubusercontent.com/MagicDash91/astronomer-airflow/static/a6.JPG)
+![Application Logo](https://raw.githubusercontent.com/MagicDash91/astronomer-airflow/main/static/a6.JPG)
 
 ## 🏗️ Architecture Overview
 
