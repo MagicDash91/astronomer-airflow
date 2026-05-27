@@ -1,0 +1,15 @@
+dbt_churn:
+  target: dev
+  outputs:
+    dev:
+      type: snowflake
+      account: ORGKMBU-HU54176
+      user: MAGICDASH
+      password: "{{ env_var('SNOWFLAKE_PASSWORD', 'Permataputihg101') }}"
+      role: ACCOUNTADMIN
+      database: DATABASE
+      warehouse: COMPUTE_WH
+      schema: dbt_staging
+      threads: 4
+      keepalives_idle: 600
+      search_path: DATABASE.dbt_staging

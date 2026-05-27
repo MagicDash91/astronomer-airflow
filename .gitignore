@@ -1,0 +1,110 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# C extensions
+*.so
+
+# Distribution / packaging
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# PyInstaller
+*.manifest
+*.spec
+
+# Installer logs
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Unit test / coverage reports
+htmlcov/
+.tox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+.hypothesis/
+.pytest_cache/
+
+# Environments
+.env
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# Airflow
+logs/
+airflow.cfg
+airflow.db
+airflow-webserver.pid
+webserver_config.py
+airflow_settings.yaml
+
+# Astro CLI
+.astro/
+astro
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Project specific
+*.log
+.logs/
+
+# Data files (don't commit actual data)
+churn/data/raw/*.csv
+churn/data/processed/*.csv
+churn/data/predictions/*.csv
+
+# Model files (optional - you might want to commit small test models)
+churn/models/*.pkl
+churn/models/*.joblib
+!churn/models/dummy_*
+
+# Docker volumes
+postgres-db-volume/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Prometheus/Grafana data
+prometheus-data/
+grafana-data/
+
+# Git
+.git
