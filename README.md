@@ -11,7 +11,7 @@ Airflow, and defines the supporting AWS infrastructure as disposable Terraform.
 
 ## Architecture
 
-![Architecture](https://raw.githubusercontent.com/MagicDash91/astronomer-airflow/main/static/arch (2).png)
+![Architecture](https://raw.githubusercontent.com/MagicDash91/astronomer-airflow/main/static/architecture.png)
 
 ```
                     ┌─────────────────────────────────────────────────────┐
