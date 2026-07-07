@@ -51,17 +51,19 @@ Airflow, and defines the supporting AWS infrastructure as disposable Terraform.
 
 ## Screenshots
 
-![Screenshot 1](https://raw.githubusercontent.com/MagicDash91/astronomer-airflow/main/static/a1.JPG)
+![Screenshot 1](https://raw.githubusercontent.com/MagicDash91/astronomer-airflow/main/static/a1.jpg)
 
-![Screenshot 2](https://raw.githubusercontent.com/MagicDash91/astronomer-airflow/main/static/a2.JPG)
+![Screenshot 2](https://raw.githubusercontent.com/MagicDash91/astronomer-airflow/main/static/a2.jpg)
 
-![Screenshot 3](https://raw.githubusercontent.com/MagicDash91/astronomer-airflow/main/static/a3.JPG)
+![Screenshot 3](https://raw.githubusercontent.com/MagicDash91/astronomer-airflow/main/static/a3.jpg)
 
-![Screenshot 4](https://raw.githubusercontent.com/MagicDash91/astronomer-airflow/main/static/a4.JPG)
+![Screenshot 4](https://raw.githubusercontent.com/MagicDash91/astronomer-airflow/main/static/a4.jpg)
 
-![Screenshot 5](https://raw.githubusercontent.com/MagicDash91/astronomer-airflow/main/static/a5.JPG)
+![Screenshot 5](https://raw.githubusercontent.com/MagicDash91/astronomer-airflow/main/static/a5.jpg)
 
-![Screenshot 6](https://raw.githubusercontent.com/MagicDash91/astronomer-airflow/main/static/a6.JPG)
+![Screenshot 6](https://raw.githubusercontent.com/MagicDash91/astronomer-airflow/main/static/a6.jpg)
+
+![Screenshot 6](https://raw.githubusercontent.com/MagicDash91/astronomer-airflow/main/static/a7.jpg)
 
 ## Tech stack
 
