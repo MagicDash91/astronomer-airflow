@@ -1,319 +1,159 @@
-# 🚀 End-to-End Customer Churn Data Engineering Platform
+# Olist E-Commerce Data Pipeline
 
-A comprehensive, production-ready data engineering platform for real-time customer churn prediction using modern data stack technologies.
+End-to-end, reproducible data pipeline on the [Olist Brazilian e-commerce
+dataset](https://www.kaggle.com/olistbr/brazilian-ecommerce), built on the modern
+data stack: **Terraform → Airflow → dbt → Snowflake**, with AWS S3 as the raw
+landing zone.
 
-## Project Workflow
+Nine raw Olist CSVs are already loaded into `E_COMMERCE.PUBLIC`. This project
+turns them into an analytics-ready **star schema**, orchestrates the build with
+Airflow, and defines the supporting AWS infrastructure as disposable Terraform.
 
-![Application Logo](https://raw.githubusercontent.com/MagicDash91/astronomer-airflow/main/static/arch.png)
+## Architecture
 
----
-
-## Project Screenshots
-
-![Application Logo](https://raw.githubusercontent.com/MagicDash91/astronomer-airflow/main/static/a1.JPG)
-
-![Application Logo](https://raw.githubusercontent.com/MagicDash91/astronomer-airflow/main/static/a2.JPG)
-
-![Application Logo](https://raw.githubusercontent.com/MagicDash91/astronomer-airflow/main/static/a3.JPG)
-
-![Application Logo](https://raw.githubusercontent.com/MagicDash91/astronomer-airflow/main/static/a4.JPG)
-
-![Application Logo](https://raw.githubusercontent.com/MagicDash91/astronomer-airflow/main/static/a5.JPG)
-
-![Application Logo](https://raw.githubusercontent.com/MagicDash91/astronomer-airflow/main/static/a6.JPG)
-
----
-
-## 🏗️ Architecture Overview
+![Architecture](https://raw.githubusercontent.com/MagicDash91/astronomer-airflow/main/static/arch.png)
 
 ```
-┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
-│   Data Sources  │    │  Stream Events  │    │   Batch Data    │
-│  (Snowflake)    │────│    (Kafka)      │────│ (Airflow/DBT)   │
-└─────────────────┘    └─────────────────┘    └─────────────────┘
-         │                       │                       │
-         └───────────────────────┼───────────────────────┘
-                                 │
-         ┌─────────────────────────────────────────────────────┐
-         │              ML Pipeline Engine                     │
-         │  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐ │
-         │  │   Batch     │  │  Real-time  │  │   Model     │ │
-         │  │ Processing  │  │ Streaming   │  │ Management  │ │
-         │  └─────────────┘  └─────────────┘  └─────────────┘ │
-         └─────────────────────────────────────────────────────┘
-                                 │
-         ┌─────────────────────────────────────────────────────┐
-         │            Monitoring & Storage                     │
-         │  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐ │
-         │  │ Prometheus  │  │   Grafana   │  │     S3      │ │
-         │  │  Metrics    │  │ Dashboards  │  │  Storage    │ │
-         │  └─────────────┘  └─────────────┘  └─────────────┘ │
-         └─────────────────────────────────────────────────────┘
+Terraform (AWS)            provisions S3 (raw landing), EC2 (Airflow), IAM, Budgets
+        │
+        ▼
+Airflow DAG  ──►  validate_sources ─► land_raw_to_s3 ─► dbt run+test ─► notify
+        │                                                    │
+        ▼                                                    ▼
+Snowflake  E_COMMERCE.PUBLIC (raw)  ──dbt──►  *_staging (views)  ──►  *_marts (star schema)
 ```
 
-## 🌟 Key Features
+## Screenshots
 
-### 📊 **Real-time Streaming Pipeline**
-- **Kafka-based event streaming** with customer behavior tracking
-- **Real-time feature engineering** using sliding time windows
-- **Instant churn predictions** with sub-second latency
-- **Automated alerting** for high-risk customers
+![Screenshot 1](https://raw.githubusercontent.com/MagicDash91/astronomer-airflow/main/static/a1.JPG)
 
-### 🤖 **Advanced ML Pipeline**
-- **DBT-powered data transformations** for clean, consistent features
-- **Production ML models** with automated training and validation
-- **Model monitoring** with drift detection and performance tracking
-- **A/B testing framework** for model comparison
+![Screenshot 2](https://raw.githubusercontent.com/MagicDash91/astronomer-airflow/main/static/a2.JPG)
 
-### 📈 **Comprehensive Monitoring**
-- **Prometheus metrics collection** for all pipeline components
-- **Grafana dashboards** with business and technical metrics
-- **Custom alerts** for pipeline failures and data quality issues
-- **Performance optimization** recommendations
+![Screenshot 3](https://raw.githubusercontent.com/MagicDash91/astronomer-airflow/main/static/a3.JPG)
 
-### ☁️ **Cloud-native Infrastructure**
-- **AWS S3** for scalable data storage and model artifacts
-- **Docker containerization** for consistent deployment
-- **Terraform IaC** for reproducible infrastructure
-- **Multi-environment support** (dev, staging, prod)
+![Screenshot 4](https://raw.githubusercontent.com/MagicDash91/astronomer-airflow/main/static/a4.JPG)
 
-## 🛠️ Technology Stack
+![Screenshot 5](https://raw.githubusercontent.com/MagicDash91/astronomer-airflow/main/static/a5.JPG)
 
-| Component | Technology | Purpose |
-|-----------|------------|---------|
-| **Orchestration** | Apache Airflow | Workflow management and scheduling |
-| **Data Transformation** | DBT | SQL-based data modeling and quality |
-| **Streaming** | Apache Kafka | Real-time event processing |
-| **ML Framework** | scikit-learn, pandas | Model training and inference |
-| **Monitoring** | Prometheus + Grafana | Metrics collection and visualization |
-| **Storage** | AWS S3, Redis | Data lake and caching |
-| **Infrastructure** | Terraform, Docker | Infrastructure as Code |
+![Screenshot 6](https://raw.githubusercontent.com/MagicDash91/astronomer-airflow/main/static/a6.JPG)
 
-## 🚦 Quick Start
+## Repository layout
 
-### 1. **Infrastructure Setup**
+```
+.
+├── dags/
+│   └── ecommerce_olist_pipeline.py     # Airflow DAG (Cosmos-rendered dbt tasks)
+├── ecommerce/
+│   ├── config/snowflake_config.py      # env-var-driven Snowflake config
+│   ├── dbt_ecommerce/                   # dbt project
+│   │   ├── models/staging/             # stg_* : rename, cast, DQ fixes
+│   │   ├── models/marts/               # fct_* / dim_* star schema
+│   │   ├── tests/                      # singular data tests
+│   │   ├── dbt_project.yml
+│   │   ├── packages.yml                # dbt_utils
+│   │   └── profiles.yml
+│   ├── terraform/                       # S3 + EC2 + IAM + Budgets (+ optional Snowflake)
+│   ├── scripts/test_snowflake_connection.py
+│   └── .env.example
+├── include/dbt_profiles/profiles.yml    # profile used by the DAG in Docker
+├── Dockerfile                           # ships ecommerce/ into the Astro image
+└── requirements.txt
+```
+
+## Target data model (star schema)
+
+| Model | Grain | Notes |
+|---|---|---|
+| `fct_order_items` | one row per order item | central fact; joins order header for customer/status/date |
+| `fct_payments` | one row per payment record | FK to customer + date |
+| `fct_reviews` | one row per review | deduplicated by `review_id` (not unique in raw) |
+| `dim_customers` | one row per `customer_id` | enriched with geolocation lat/lng |
+| `dim_products` | one row per `product_id` | joined to corrected PT→EN category mapping |
+| `dim_sellers` | one row per `seller_id` | enriched with geolocation lat/lng |
+| `dim_geolocation` | one row per zip prefix | deduplicated (avg lat/lng, modal city/state) |
+| `dim_date` | one row per day | 2016-01-01 → 2019-12-31, `date_key` = `YYYYMMDD` |
+
+### Data-quality fixes handled in staging
+- **`PRODUCT_CATEGORY`** was loaded without headers (columns `C1`/`C2`, first data
+  row is the literal header). `stg_product_category` drops that stray row and
+  aliases `C1 → product_category_name`, `C2 → product_category_name_english`.
+- **`PRODUCTS`** carries the source typo `PRODUCT_NAME_LENGHT` /
+  `PRODUCT_DESCRIPTION_LENGHT`. Preserved in raw, corrected to `..._length` in staging.
+- **`ORDER_REVIEWS.REVIEW_ID`** is not unique (99,224 rows / 98,410 ids).
+  `stg_order_reviews` keeps the latest-answered row per `review_id`.
+- **`GEOLOCATION`** has many rows per zip prefix; deduplicated to one representative
+  point per prefix.
+
+## Prerequisites
+- Python 3.9+ with the project `venv` (or `pip install -r requirements.txt`)
+- [Astro CLI](https://www.astronomer.io/docs/astro/cli/install-cli) + Docker (to run Airflow)
+- Terraform ≥ 1.5 and AWS credentials (only for the infra layer)
+- Snowflake access to `E_COMMERCE.PUBLIC`
+
+## Setup
 
 ```bash
-# Start monitoring and streaming infrastructure
-cd churn/docker
-docker-compose up -d
+cp ecommerce/.env.example ecommerce/.env      # then fill in SNOWFLAKE_PASSWORD etc.
+export SNOWFLAKE_PASSWORD=...                  # or `set -a; source ecommerce/.env; set +a`
+```
 
-# Deploy AWS infrastructure
-cd ../terraform
+Credentials are **never** hardcoded — everything is read from environment
+variables, and `.env` is gitignored.
+
+## Run dbt directly
+
+```bash
+cd ecommerce/dbt_ecommerce
+export DBT_PROFILES_DIR="$PWD"
+dbt deps           # install dbt_utils
+dbt debug          # verify the Snowflake connection
+dbt build          # run all models + tests (staging views + mart tables)
+dbt docs generate && dbt docs serve   # browse the lineage/docs site
+```
+
+A clean `dbt build` produces **8 mart tables + 9 staging views** and runs
+**88 tests** (PK `unique`/`not_null`, FK `relationships`, accepted values/ranges).
+One intentional `warn` covers 13 products whose category is absent from the
+mapping table.
+
+## Run the pipeline in Airflow
+
+```bash
+astro dev start                 # builds the image (ships ecommerce/ into include/)
+# open http://localhost:8080  →  enable & trigger `ecommerce_olist_pipeline`
+```
+
+DAG tasks: `validate_sources → land_raw_to_s3 → dbt_transform (Cosmos) → notify`.
+- `validate_sources` — asserts all 9 raw tables exist and are non-empty.
+- `land_raw_to_s3` — snapshots each raw table to CSV and uploads to the S3 landing
+  bucket (skipped gracefully without AWS creds).
+- `dbt_transform` — Cosmos renders every model + test as its own task (run→test).
+- `notify` — logs a run summary; sends WhatsApp if `WHATSAPP_*` env vars are set.
+
+## Provision / tear down AWS infra
+
+```bash
+cd ecommerce/terraform
 terraform init
-terraform plan
-terraform apply
+terraform apply      # S3 landing bucket, EC2 Airflow host, IAM role, Budgets
+# ... run the pipeline / capture screenshots ...
+terraform destroy    # buckets use force_destroy = true, so this is clean
 ```
 
-### 2. **Start Airflow Pipeline**
+Optional: rename `snowflake.tf.example → snowflake.tf` to provision the
+least-privilege `DBT_PIPELINE_ROLE` and warehouse auto-suspend via
+`terraform-provider-snowflake`.
 
-```bash
-# Activate virtual environment
-source venv/bin/activate
+## Cost & security controls
+- **Budgets** alert at **$20** and **$50** of monthly AWS spend.
+- **S3** landing objects expire after 30 days; buckets are private + encrypted.
+- **EC2** should be **stopped between runs** (`aws ec2 stop-instances --instance-ids <id>`).
+- **Snowflake** `COMPUTE_WH` should use auto-suspend (see optional Snowflake module).
+- **No secrets in source**: all credentials come from env vars; `.env` is gitignored.
+  Rotate any credential previously shared in plaintext (chat/screenshots) and move
+  the pipeline to `DBT_PIPELINE_ROLE` instead of `ACCOUNTADMIN`.
 
-# Start Astro development server
-astro dev start
-
-# Access Airflow UI: http://localhost:8080
-# Enable DAGs:
-#   - telco_churn_unified_pipeline
-#   - real_time_churn_streaming
-```
-
-### 3. **Monitor Dashboard**
-
-```bash
-# Access monitoring dashboards
-open http://localhost:3000  # Grafana (admin/admin123)
-open http://localhost:9090  # Prometheus
-open http://localhost:8080  # Kafka UI
-open http://localhost:8000/metrics  # Custom metrics
-```
-
-## 📋 Pipeline Components
-
-### **Batch Processing Pipeline** (`telco_churn_unified_pipeline`)
-
-```
-Data Validation → DBT Transformations → ML Training → Predictions → S3 Storage
-      ↓                 ↓                  ↓             ↓           ↓
-Source Check    →  Feature Engineering →  Model    →  Risk     →  Archive
-Raw Extract     →  Data Quality Tests  →  Validate →  Scoring  →  Artifacts
-```
-
-**Features:**
-- ✅ Validates source data availability and quality
-- ✅ DBT-powered feature engineering with fallback processing
-- ✅ Automated ML model training with hyperparameter optimization
-- ✅ Model validation with configurable accuracy thresholds
-- ✅ Risk-based customer segmentation (Low/Medium/High/Critical)
-- ✅ Comprehensive S3 storage with organized data partitioning
-
-### **Real-time Streaming Pipeline** (`real_time_churn_streaming`)
-
-```
-Event Producer → Kafka Topics → Stream Processor → ML Inference → Alerts
-      ↓              ↓              ↓                ↓            ↓
-Customer     → Event Stream → Feature Engine → Risk Score → Intervention
-Behavior     → Processing   → Aggregation   → Prediction → Actions
-```
-
-**Features:**
-- ✅ Real-time customer event simulation and processing
-- ✅ Sliding window feature aggregation (1h, 24h, 7d)
-- ✅ Instant churn probability scoring
-- ✅ Automated high-risk customer alerts
-- ✅ Redis-backed feature caching for performance
-
-## 📊 Monitoring & Alerts
-
-### **Key Metrics Tracked**
-
-| Category | Metrics | Alerting |
-|----------|---------|----------|
-| **Pipeline** | DAG success rate, execution time | ❌ Failed runs, ⚠️ Slow execution |
-| **ML Models** | Accuracy, feature importance, drift | ⚠️ Accuracy drop, 🔍 Model drift |
-| **Data Quality** | Completeness, freshness, anomalies | ❌ Quality failures, 📅 Stale data |
-| **Streaming** | Throughput, latency, consumer lag | ⚠️ High latency, 📈 Lag spikes |
-| **Business** | Customers at risk, revenue impact | 🚨 High-risk alerts, 💰 Revenue exposure |
-
-### **Grafana Dashboards**
-
-1. **Pipeline Overview**: DAG status, execution times, success rates
-2. **ML Model Performance**: Accuracy trends, feature importance, predictions
-3. **Data Quality**: Completeness scores, freshness, validation results
-4. **Streaming Analytics**: Message throughput, processing latency
-5. **Business Intelligence**: Risk distribution, revenue impact, interventions
-
-## 🔧 Configuration
-
-### **Environment Variables**
-
-```bash
-# Snowflake Connection
-export SNOWFLAKE_PASSWORD='your_password'
-
-# AWS Credentials  
-export AWS_ACCESS_KEY_ID='your_key'
-export AWS_SECRET_ACCESS_KEY='your_secret'
-
-# Monitoring Configuration
-export PROMETHEUS_PORT=9090
-export GRAFANA_PASSWORD='admin123'
-export METRICS_COLLECTION_INTERVAL=30
-```
-
-### **Airflow Configuration**
-
-```python
-# Key DAG settings
-SCHEDULE_INTERVAL = '@daily'  # Batch processing frequency
-MAX_ACTIVE_RUNS = 1          # Prevent overlapping runs
-RETRIES = 2                  # Automatic retry on failure
-MODEL_ACCURACY_THRESHOLD = 0.75  # Model validation threshold
-```
-
-### **Streaming Configuration**
-
-```python
-# Kafka Topics
-TOPICS = {
-    'customer_events': 'customer-events',
-    'churn_predictions': 'churn-predictions', 
-    'alerts': 'churn-alerts'
-}
-
-# Processing Windows
-FEATURE_WINDOWS = ['1h', '24h', '7d']  # Real-time aggregation periods
-RISK_THRESHOLDS = [0.4, 0.6, 0.8]     # Low/Medium/High/Critical
-```
-
-## 🎯 Business Value
-
-### **Operational Benefits**
-- **90% reduction** in manual churn analysis time
-- **Real-time intervention** for high-risk customers
-- **Automated model retraining** with data drift detection
-- **Scalable architecture** supporting 100K+ customers
-
-### **Financial Impact**
-- **Early churn detection** reduces customer acquisition costs
-- **Targeted retention campaigns** improve conversion rates
-- **Revenue protection** through proactive customer engagement
-- **Operational efficiency** through automated workflows
-
-### **Risk Mitigation**
-- **Comprehensive monitoring** prevents silent failures
-- **Data quality validation** ensures model reliability
-- **Model performance tracking** maintains prediction accuracy
-- **Infrastructure resilience** with automatic scaling
-
-## 📁 Project Structure
-
-```
-churn/
-├── config/                    # Configuration files
-├── dags/                      # Airflow DAG definitions  
-├── dbt_churn/                 # DBT transformation project
-├── streaming/                 # Kafka streaming components
-│   ├── producers/             # Event generators
-│   ├── consumers/             # Stream processors
-│   └── schemas/               # Data models
-├── monitoring/                # Prometheus & Grafana setup
-│   ├── prometheus/            # Metrics collection
-│   ├── grafana/               # Dashboards & alerting
-│   └── metrics_collector.py   # Custom metrics
-├── terraform/                 # Infrastructure as Code
-├── docker/                    # Container orchestration
-├── scripts/                   # Utility scripts
-├── data/                      # Local data storage
-└── models/                    # ML model artifacts
-```
-
-## 🔮 Roadmap
-
-### **Phase 1: Foundation** ✅
-- [x] Core batch processing pipeline
-- [x] Basic ML model training and inference
-- [x] S3 storage integration
-- [x] DBT data transformations
-
-### **Phase 2: Real-time & Monitoring** ✅
-- [x] Kafka streaming infrastructure  
-- [x] Real-time feature engineering
-- [x] Prometheus & Grafana monitoring
-- [x] Custom metrics collection
-
-### **Phase 3: Advanced Features** 🚧
-- [ ] A/B testing framework for model comparison
-- [ ] Advanced anomaly detection
-- [ ] Customer journey optimization
-- [ ] Multi-model ensemble predictions
-
-### **Phase 4: Production Scaling** 📅
-- [ ] Kubernetes deployment
-- [ ] Multi-region data replication
-- [ ] Advanced security controls
-- [ ] Cost optimization automation
-
-## 🤝 Contributing
-
-1. **Development Setup**: Follow the Quick Start guide
-2. **Code Quality**: Use `black`, `flake8`, `mypy` for code formatting
-3. **Testing**: Add unit tests for new functionality
-4. **Documentation**: Update README for new features
-5. **Monitoring**: Add metrics for new pipeline components
-
-## 📞 Support
-
-- **Pipeline Issues**: Check Airflow logs and Grafana dashboards
-- **Model Performance**: Review validation metrics and feature importance
-- **Infrastructure**: Monitor Prometheus alerts and system resources
-- **Data Quality**: Validate DBT test results and data freshness
-
----
-
-**🏆 Production Status**: ✅ **FULLY OPERATIONAL**  
-**📊 Monitoring**: Active on Grafana + Prometheus  
-**🔄 Automation**: Complete CI/CD with Terraform  
-**⚡ Performance**: Real-time processing <1s latency
+## Teardown checklist (portfolio)
+1. `dbt docs generate` and capture the lineage graph + a successful DAG run.
+2. `astro dev stop`.
+3. `terraform destroy` and confirm no orphaned S3 buckets / ENIs remain.

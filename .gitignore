@@ -86,25 +86,30 @@ Thumbs.db
 *.log
 .logs/
 
-# Data files (don't commit actual data)
-churn/data/raw/*.csv
-churn/data/processed/*.csv
-churn/data/predictions/*.csv
+# Raw data snapshots (don't commit actual data)
+ecommerce/**/landing/*.csv
+*.csv
 
-# Model files (optional - you might want to commit small test models)
-churn/models/*.pkl
-churn/models/*.joblib
-!churn/models/dummy_*
+# dbt artifacts
+ecommerce/dbt_ecommerce/target/
+ecommerce/dbt_ecommerce/dbt_packages/
+ecommerce/dbt_ecommerce/logs/
+package-lock.yml
+.user.yml
+
+# Terraform (keep .terraform.lock.hcl; ignore state + provider cache)
+**/.terraform/
+*.tfstate
+*.tfstate.*
+*.tfvars
+!*.tfvars.example
+crash.log
 
 # Docker volumes
 postgres-db-volume/
 
 # Jupyter
 .ipynb_checkpoints/
-
-# Prometheus/Grafana data
-prometheus-data/
-grafana-data/
 
 # Git
 .git
