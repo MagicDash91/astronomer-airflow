@@ -14,13 +14,39 @@ Airflow, and defines the supporting AWS infrastructure as disposable Terraform.
 ![Architecture](https://raw.githubusercontent.com/MagicDash91/astronomer-airflow/main/static/arch.png)
 
 ```
-Terraform (AWS)            provisions S3 (raw landing), EC2 (Airflow), IAM, Budgets
-        │
-        ▼
-Airflow DAG  ──►  validate_sources ─► land_raw_to_s3 ─► dbt run+test ─► notify
-        │                                                    │
-        ▼                                                    ▼
-Snowflake  E_COMMERCE.PUBLIC (raw)  ──dbt──►  *_staging (views)  ──►  *_marts (star schema)
+                    ┌─────────────────────────────────────────────────────┐
+                    │        Terraform  ·  Infrastructure as Code          │
+                    │  VPC · Subnet · Internet Gateway · Security Group     │
+                    │  IAM role · S3 landing bucket · EC2 host · Budgets    │
+                    └───────────────────────────┬─────────────────────────┘
+                                                │ provisions
+                                                ▼
+ ┌───────────────┐    ingest     ┌─────────────────────────────────────────┐
+ │  Olist CSVs   │ ────────────► │   Snowflake  ·  E_COMMERCE.PUBLIC (raw)  │
+ │ (9 raw files) │               │            9 raw source tables           │
+ └───────────────┘               └───────────────────────┬─────────────────┘
+                                                         │
+ ┌───────────────────────────────────────────────────────┼───────────────────┐
+ │  Apache Airflow  (Astronomer Runtime · Docker · EC2)   │   orchestration   │
+ │                                                        ▼                   │
+ │   validate_sources ─► land_raw_to_s3 ─► dbt_transform ─────► notify        │
+ │                             │            (Cosmos: run+test)     │          │
+ │                             ▼                                   ▼          │
+ │                     ┌──────────────┐                    ┌──────────────┐   │
+ │                     │  Amazon S3   │                    │   WhatsApp   │   │
+ │                     │ raw landing  │                    │  Cloud API   │   │
+ │                     └──────────────┘                    └──────────────┘   │
+ └────────────────────────────────┬──────────────────────────────────────────┘
+                                  │ dbt (via Cosmos)
+                                  ▼
+     ┌──────────────────────────────────────────────────────────────────┐
+     │                       dbt  ·  Snowflake                           │
+     │   staging views (stg_*)  ──►  marts / star schema (fct_* dim_*)   │
+     │                                                                   │
+     │   Facts:  fct_order_items · fct_payments · fct_reviews            │
+     │   Dims :  dim_customers · dim_products · dim_sellers ·            │
+     │           dim_geolocation · dim_date                              │
+     └──────────────────────────────────────────────────────────────────┘
 ```
 
 ## Screenshots
@@ -36,6 +62,30 @@ Snowflake  E_COMMERCE.PUBLIC (raw)  ──dbt──►  *_staging (views)  ─�
 ![Screenshot 5](https://raw.githubusercontent.com/MagicDash91/astronomer-airflow/main/static/a5.JPG)
 
 ![Screenshot 6](https://raw.githubusercontent.com/MagicDash91/astronomer-airflow/main/static/a6.JPG)
+
+## Tech stack
+
+| Layer | Tools & technologies |
+|---|---|
+| **Cloud data warehouse** | Snowflake (`E_COMMERCE.PUBLIC`, `COMPUTE_WH`) |
+| **Transformation** | dbt Core 1.11 · dbt-snowflake · dbt_utils |
+| **Orchestration** | Apache Airflow (Astronomer Runtime 3.2) · Astronomer Cosmos (renders each dbt model + test as a native Airflow task) |
+| **Containerization & local dev** | Docker · Astro CLI |
+| **Infrastructure as Code** | Terraform (AWS provider ~> 5.0) |
+| **Language & libraries** | Python 3 · pandas · snowflake-connector-python · boto3 · requests |
+| **Notifications** | WhatsApp Cloud API (webhook; falls back to logging) |
+| **Source data** | Olist Brazilian E-Commerce dataset (9 raw CSVs) |
+
+### AWS services
+
+| Service | Role in the pipeline |
+|---|---|
+| **Amazon S3** | Raw landing bucket — versioned, SSE-encrypted, 30-day lifecycle expiry, public access blocked |
+| **Amazon EC2** | `t3.medium` self-hosted Airflow host (Docker + Astro CLI bootstrapped via user-data) |
+| **Amazon VPC** | Dedicated VPC + public subnet + internet gateway + route table |
+| **Security Groups** | SSH (22) and Airflow UI (8080) locked to a single allowed CIDR |
+| **AWS IAM** | Least-privilege role + instance profile for the Airflow host |
+| **AWS Budgets** | Monthly cost alerts at $20 and $50 |
 
 ## Repository layout
 
